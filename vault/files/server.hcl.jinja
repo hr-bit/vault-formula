@@ -5,6 +5,16 @@ backend "s3" {
 }
 {% endif -%}
 
+{%- if vault.storage -%}
+storage "{{ vault.storage.type }}"
+{%- if vault.storage.parameter %} {
+{%- for key,value in vault.storage.parameter.items() %}
+{{ key }} = "{{ value }}"
+{%- endfor %}
+}
+{%- endif -%}
+{%- endif %}
+
 listener "{{ vault.listen_protocol }}" {
   address = "{{ vault.listen_address }}:{{ vault.listen_port }}"
   tls_disable = {{ vault.tls_disable }}

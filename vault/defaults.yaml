@@ -11,6 +11,10 @@ vault:
   self_signed_cert:
     enabled: false
   backend: {}
+  storage:
+    type: "file"
+    parameter:
+      path: "/var/vault"
   dev_mode: true
   secure_download: true
   service:
