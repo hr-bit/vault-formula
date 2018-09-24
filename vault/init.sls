@@ -63,7 +63,7 @@ verify vault:
 
 install vault:
   cmd.run:
-    - name: unzip /tmp/vault_{{ vault.version }}_linux_amd64.zip -d /usr/local/bin && chmod 0755 /usr/local/bin/vault && chown root:root /usr/local/bin/vault
+    - name: unzip -o /tmp/vault_{{ vault.version }}_linux_amd64.zip -d /usr/local/bin && chmod 0755 /usr/local/bin/vault && chown root:root /usr/local/bin/vault
     - require:
       - cmd: download vault
       - pkg: unzip
