@@ -70,7 +70,6 @@ install vault:
       {% if vault.secure_download %}
       - cmd: verify vault
       {% endif %}
-    - creates: /usr/local/bin/vault
 
 vault set cap mlock:
   cmd.run:
