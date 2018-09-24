@@ -18,6 +18,7 @@ vault packages:
 download vault:
   cmd.run:
     - name: curl --silent -L https://releases.hashicorp.com/vault/{{ vault.version }}/vault_{{ vault.version }}_linux_amd64.zip -o /tmp/vault_{{ vault.version }}_linux_amd64.zip
+    - unless: if [ -f /usr/local/bin/vault ] ; then  /usr/local/bin/vault --version |grep -q {{ vault.version }} ; else false; fi
     - creates: /tmp/vault_{{ vault.version }}_linux_amd64.zip
 
 {% if vault.secure_download %}
