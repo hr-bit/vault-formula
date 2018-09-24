@@ -25,17 +25,21 @@ download vault:
 download shasums:
   cmd.run:
     - name: curl --silent -L https://releases.hashicorp.com/vault/{{ vault.version }}/vault_{{ vault.version }}_SHA256SUMS -o /tmp/vault_{{ vault.version }}_SHA256SUMS
+    - unless: if [ -f /usr/local/bin/vault ] ; then  /usr/local/bin/vault --version |grep -q {{ vault.version }} ; else false; fi
     - creates: /tmp/vault_{{ vault.version }}_SHA256SUMS
 
 download shasums sig:
   cmd.run:
     - name: curl --silent -L https://releases.hashicorp.com/vault/{{ vault.version }}/vault_{{ vault.version }}_SHA256SUMS.sig -o /tmp/vault_{{ vault.version }}_SHA256SUMS.sig
+    - unless: if [ -f /usr/local/bin/vault ] ; then  /usr/local/bin/vault --version |grep -q {{ vault.version }} ; else false; fi
     - creates: /tmp/vault_{{ vault.version }}_SHA256SUMS.sig
 
 /tmp/hashicorp.asc:
   file.managed:
     - source: salt://vault/files/hashicorp.asc.jinja
     - template: jinja
+    - unless: gpg --list-keys {{ vault.hashicorp_key_id }}
+    - unless: if [ -f /usr/local/bin/vault ] ; then  /usr/local/bin/vault --version |grep -q {{ vault.version }} ; else false; fi
 
 import key:
   cmd.run:
@@ -48,6 +52,7 @@ import key:
 verify shasums sig:
   cmd.run:
     - name: gpg --verify /tmp/vault_{{ vault.version }}_SHA256SUMS.sig /tmp/vault_{{ vault.version }}_SHA256SUMS
+    - unless: if [ -f /usr/local/bin/vault ] ; then  /usr/local/bin/vault --version |grep -q {{ vault.version }} ; else false; fi
     - require:
       - cmd: download shasums
       - cmd: import key
@@ -56,6 +61,7 @@ verify vault:
   cmd.run:
     - name: "shasum -a 256 -c vault_{{ vault.version }}_SHA256SUMS 2>&1 | grep -q \"vault_{{ vault.version }}_linux_amd64.zip: OK\""
     - cwd: /tmp
+    - unless: if [ -f /usr/local/bin/vault ] ; then  /usr/local/bin/vault --version |grep -q {{ vault.version }} ; else false; fi
     - require:
       - cmd: download vault
       - cmd: verify shasums sig
@@ -64,6 +70,7 @@ verify vault:
 install vault:
   cmd.run:
     - name: unzip -o /tmp/vault_{{ vault.version }}_linux_amd64.zip -d /usr/local/bin && chmod 0755 /usr/local/bin/vault && chown root:root /usr/local/bin/vault
+    - unless: if [ -f /usr/local/bin/vault ] ; then  /usr/local/bin/vault --version |grep -q {{ vault.version }} ; else false; fi
     - require:
       - cmd: download vault
       - pkg: unzip
